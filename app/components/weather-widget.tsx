@@ -34,7 +34,7 @@ const WeatherWidget = ({
     <div className={weatherClass}>
       <div className={styles.weatherWidgetData}>
         <p>{location}</p>
-        <h2>{temperature !== "---" ? `${temperature}°F` : temperature}</h2>
+        <h2>{temperature !== "---" ? `${temperature}°C` : temperature}</h2>
         <p>{conditions}</p>
       </div>
     </div>

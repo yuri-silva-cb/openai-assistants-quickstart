@@ -20,6 +20,7 @@ const TrashIcon = () => (
 
 const FileViewer = () => {
   const [files, setFiles] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -45,6 +46,15 @@ const FileViewer = () => {
   };
 
   const handleFileUpload = async (event) => {
+   
+    const file = event.target.files[0];
+    const maxSize = 20 * 1024 * 1024; // 20 MB em bytes
+
+    if (file&&file.size > maxSize) {
+      setErrorMessage('O arquivo é muito grande. O tamanho máximo permitido é de 20 MB.');
+      return;
+    }
+   
     const data = new FormData();
     if (event.target.files.length < 0) return;
     data.append("file", event.target.files[0]);
@@ -52,6 +62,10 @@ const FileViewer = () => {
       method: "POST",
       body: data,
     });
+
+    // Limpa mensagem de erro caso o upload seja bem sucedido
+    setErrorMessage('');
+
   };
 
   return (
@@ -62,7 +76,9 @@ const FileViewer = () => {
         }`}
       >
         {files.length === 0 ? (
-          <div className={styles.title}>Attach files to test file search</div>
+          <div className={styles.title}>Anexe os arquivos aqui   <div className={styles.supportedFormats}>
+          Formatos suportados: docx, xlsx, pdf e txt
+        </div> </div>
         ) : (
           files.map((file) => (
             <div key={file.file_id} className={styles.fileEntry}>
@@ -79,7 +95,7 @@ const FileViewer = () => {
       </div>
       <div className={styles.fileUploadContainer}>
         <label htmlFor="file-upload" className={styles.fileUploadBtn}>
-          Attach files
+          Anexar
         </label>
         <input
           type="file"
@@ -90,7 +106,12 @@ const FileViewer = () => {
           onChange={handleFileUpload}
         />
       </div>
-    </div>
+      {errorMessage && (
+        <div style={{ color: 'red', marginTop: '10px' }}>
+          {errorMessage}
+        </div>
+      )}
+      </div>
   );
 };
 
