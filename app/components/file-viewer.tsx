@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./file-viewer.module.css";
+import {v4 as uuidv4} from 'uuid';
 
 const TrashIcon = () => (
   <svg
@@ -19,19 +20,28 @@ const TrashIcon = () => (
 );
 
 const FileViewer = () => {
+  const [sessionId, setSessionId] = useState('');
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    let id = localStorage.getItem('sessionID');
+    if (!id){
+    id=uuidv4();
+    localStorage.setItem('sessionId',id);
+    }
+    setSessionId(id);
+    
+    
     const interval = setInterval(() => {
-      fetchFiles();
+      fetchFiles(id);
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const fetchFiles = async () => {
-    const resp = await fetch("/api/assistants/files", {
+  const fetchFiles = async (sessionId) => {
+    const resp = await fetch("/api/assistants/files?sessionId=${sessionId}", {
       method: "GET",
     });
     const data = await resp.json();
@@ -41,7 +51,10 @@ const FileViewer = () => {
   const handleFileDelete = async (fileId) => {
     await fetch("/api/assistants/files", {
       method: "DELETE",
-      body: JSON.stringify({ fileId }),
+      body: JSON.stringify({ fileId, sessionId }),
+      headers:{
+        'Content-Type':'application/json'
+      },
     });
   };
 
