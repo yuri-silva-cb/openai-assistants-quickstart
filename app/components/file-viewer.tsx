@@ -20,28 +20,20 @@ const TrashIcon = () => (
 );
 
 const FileViewer = () => {
-  const [sessionId, setSessionId] = useState('');
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    let id = localStorage.getItem('sessionID');
-    if (!id){
-    id=uuidv4();
-    localStorage.setItem('sessionId',id);
-    }
-    setSessionId(id);
-    
-    
+
     const interval = setInterval(() => {
-      fetchFiles(id);
+      fetchFiles();
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const fetchFiles = async (sessionId) => {
-    const resp = await fetch("/api/assistants/files?sessionId=${sessionId}", {
+  const fetchFiles = async () => {
+    const resp = await fetch("/api/assistants/files", {
       method: "GET",
     });
     const data = await resp.json();
@@ -51,7 +43,7 @@ const FileViewer = () => {
   const handleFileDelete = async (fileId) => {
     await fetch("/api/assistants/files", {
       method: "DELETE",
-      body: JSON.stringify({ fileId, sessionId }),
+      body: JSON.stringify({ fileId}),
       headers:{
         'Content-Type':'application/json'
       },
