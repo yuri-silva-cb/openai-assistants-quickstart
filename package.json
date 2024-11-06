@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "formidable": "^3.5.2",
     "next": "^14.2.16",
     "next-auth": "^4.24.10",
     "openai": "^4.46.0",
